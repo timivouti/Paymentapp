@@ -1,9 +1,5 @@
 package com.example.timivoutilainen.paymentapp
 
-import java.util.*
-
-data class Payment(var name: String, val amount: Double, val date: GregorianCalendar)
-
 data class PaymentModel(
         val id: Int,
         val transaction_type: Int,

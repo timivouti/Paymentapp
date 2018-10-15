@@ -1,12 +1,11 @@
 package com.example.timivoutilainen.paymentapp
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -15,6 +14,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,6 +45,17 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, AddPaymentActivity::class.java).apply{}
             startActivity(intent)
         }
+
+        rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy > 0) {
+                    fab.hide()
+                }
+                else if (dy < 0) {
+                    fab.show()
+                }
+            }
+        })
     }
 
     private fun getPayments() {

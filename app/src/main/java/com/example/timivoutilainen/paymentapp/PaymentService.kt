@@ -1,13 +1,13 @@
 package com.example.timivoutilainen.paymentapp
 
-import com.google.gson.JsonArray
-import org.json.JSONArray
+import io.reactivex.Observable
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import io.reactivex.Observable
-import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.POST
 import java.util.*
 
 interface PaymentService {

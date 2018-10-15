@@ -14,18 +14,18 @@ import java.util.*
 class CustomAdapter(private val paymentsList: ArrayList<PaymentModel>): RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
     @SuppressLint("SimpleDateFormat")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        var year = paymentsList[position].transaction_date.substring(0, 4).toInt()
-        var month = paymentsList[position].transaction_date.substring(5, 7).toInt()
-        var day = paymentsList[position].transaction_date.substring(8, 10).toInt()
+        val year = paymentsList[position].transaction_date.substring(0, 4).toInt()
+        val month = paymentsList[position].transaction_date.substring(5, 7).toInt()
+        val day = paymentsList[position].transaction_date.substring(8, 10).toInt()
 
-        holder?.paymentName?.text = paymentsList[position].name
-        holder?.paymentAmount?.text = paymentsList[position].amount.toString()
-        holder?.paymentDate?.text = SimpleDateFormat("dd.MM.yyyy").format(GregorianCalendar(year, month, day).time).toString()
+        holder.paymentName.text = paymentsList[position].name
+        holder.paymentAmount.text = paymentsList[position].amount.toString()
+        holder.paymentDate.text = SimpleDateFormat("dd.MM.yyyy").format(GregorianCalendar(year, month, day).time).toString()
 
         if (paymentsList[position].amount < 0) {
-            holder?.paymentAmount?.setTextColor(Color.parseColor("#ff9999"))
+            holder.paymentAmount.setTextColor(Color.parseColor("#ff9999"))
         } else {
-            holder?.paymentAmount?.setTextColor(Color.parseColor("#99ff99"))
+            holder.paymentAmount.setTextColor(Color.parseColor("#99ff99"))
         }
     }
 

@@ -1,14 +1,11 @@
 package com.example.timivoutilainen.paymentapp
 
-import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
 import android.content.Intent
-import android.util.Log
+import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
-import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -35,17 +32,26 @@ class AddPaymentActivity : AppCompatActivity() {
         button = findViewById(R.id.button)
 
         button.setOnClickListener {
-            val receiver: Receiver = Receiver(receiverNameText.text.toString(), receiverNumberText.text.toString())
-            val amount: String = amountText.text.toString()
+            val receiver: Receiver? = Receiver(receiverNameText.text.toString(), receiverNumberText.text.toString())
+            val amount: String? = amountText.text.toString()
 
 
-            disposable = paymentServe.sendPayment(NewPayment(receiver, amount.toDouble()))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            { _ ->  navigateMainActivity()},
-                            { error -> Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show() }
-                    )
+            if (amount != null) {
+                try {
+                    var amountDouble = amount.toDouble()
+                    disposable = paymentServe.sendPayment(NewPayment(receiver!!, amountDouble))
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    { _ ->  navigateMainActivity()},
+                                    { error -> Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show() }
+                            )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+                }
+
+            }
         }
     }
 
