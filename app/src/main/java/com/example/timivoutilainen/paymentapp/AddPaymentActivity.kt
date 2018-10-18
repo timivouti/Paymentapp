@@ -46,21 +46,19 @@ class AddPaymentActivity : AppCompatActivity() {
 
             loading()
 
-            if (amount != null) {
-                try {
-                    var amountDouble = amount.toDouble()
-                    disposable = paymentServe.sendPayment(NewPayment(receiver!!, amountDouble))
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    { _ ->  navigateMainActivity() },
-                                    { error -> Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show(); reset() }
-                            )
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
-                    reset()
-                }
+            if (amount != null) try {
+                var amountDouble = amount.toDouble()
+                disposable = paymentServe.sendPayment(NewPayment(receiver!!, amountDouble))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                { _ ->  navigateMainActivity() },
+                                { error -> Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show(); reset() }
+                        )
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+                reset()
             } else {
                 reset()
             }
@@ -68,17 +66,15 @@ class AddPaymentActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        var intent: Intent = Intent(applicationContext, MainActivity::class.java)
-        startActivityForResult(intent, 0)
+        finish()
         return true
     }
 
     private fun navigateMainActivity() {
-        val intent = Intent(this, MainActivity::class.java).apply{}
-        startActivity(intent)
+        finish()
     }
 
-    fun reset() {
+    private fun reset() {
         progressBar.visibility = View.INVISIBLE
         button.visibility = View.VISIBLE
     }

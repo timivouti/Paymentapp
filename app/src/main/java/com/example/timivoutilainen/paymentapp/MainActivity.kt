@@ -35,9 +35,7 @@ class MainActivity : AppCompatActivity() {
 
         progressBar = findViewById(R.id.progressBar)
 
-        getPayments()
-
-        adapter = CustomAdapter(payments)
+        adapter = CustomAdapter(payments, this)
         rv.adapter = adapter
         fab = findViewById(R.id.fab)
 
@@ -58,7 +56,15 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        getPayments()
+    }
+
     private fun getPayments() {
+        rv.visibility = View.INVISIBLE
+        progressBar.visibility = View.VISIBLE
+        payments.clear()
         disposable = paymentServe.getResult()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -122,6 +128,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun removeProgressbar() {
         progressBar.visibility = View.GONE
+        rv.visibility = View.VISIBLE
     }
 
     private fun updateAdapter() {
