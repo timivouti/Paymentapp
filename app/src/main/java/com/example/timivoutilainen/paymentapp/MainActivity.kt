@@ -3,6 +3,7 @@ package com.example.timivoutilainen.paymentapp
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -23,21 +24,20 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: CustomAdapter
     private val paymentServe by lazy { PaymentService.create() }
     private var disposable: Disposable? = null
-    private lateinit var progressBar: ProgressBar
     private lateinit var fab: FloatingActionButton
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        rv = findViewById<RecyclerView>(R.id.recyclerView)
+        rv = findViewById(R.id.recyclerView)
         rv.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
-
-        progressBar = findViewById(R.id.progressBar)
 
         adapter = CustomAdapter(payments, this)
         rv.adapter = adapter
         fab = findViewById(R.id.fab)
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
 
         fab.setOnClickListener {
             val intent = Intent(this, AddPaymentActivity::class.java).apply{}
@@ -54,6 +54,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+
+        swipeRefreshLayout.setOnRefreshListener {
+            getPayments()
+        }
     }
 
     override fun onResume() {
@@ -62,15 +66,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getPayments() {
-        rv.visibility = View.INVISIBLE
-        progressBar.visibility = View.VISIBLE
+        loading()
         payments.clear()
+        updateAdapter()
         disposable = paymentServe.getResult()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         { result -> savePayments(result); getPersons() },
-                        { error -> Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show(); removeProgressbar() }
+                        { error -> Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show(); removeLoading() }
                 )
     }
 
@@ -86,7 +90,7 @@ class MainActivity : AppCompatActivity() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         { result -> savePersons(result) },
-                        { error -> Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show(); removeProgressbar() }
+                        { error -> Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show(); removeLoading() }
                 )
 
     }
@@ -94,6 +98,14 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         disposable?.dispose()
+    }
+
+    private fun loading() {
+        swipeRefreshLayout.isRefreshing = true
+    }
+
+    private fun removeLoading() {
+        swipeRefreshLayout.isRefreshing = false
     }
 
     /* OLD MAPPING
@@ -122,13 +134,8 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        removeProgressbar()
         updateAdapter()
-    }
-
-    private fun removeProgressbar() {
-        progressBar.visibility = View.GONE
-        rv.visibility = View.VISIBLE
+        removeLoading()
     }
 
     private fun updateAdapter() {
